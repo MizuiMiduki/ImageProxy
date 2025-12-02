@@ -19,7 +19,7 @@ function get_mime_type($file){
     return $mime_type;
 }
 
-function vaild($text){
+function valid($text){
     return preg_match("/https?(:\/\/[\w\/:%#\$&\?\(\)~\.=\+\-]+)/", $text);
 }
 
