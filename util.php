@@ -26,8 +26,7 @@ function vaild($text){
 function err_image($code, $BP){
     http_response_code($code);
     if(!file_exists($BP."{$code}.png")) exit;
-    $mime = get_mime_type($BP."${code}.png");
-    header("Content-Type: {$mime}");
+    header("Content-Type: image/png");
     readfile($BP."{$code}.png");
     return;
 }
