@@ -6,7 +6,7 @@ require_once "config.php";
 header("Access-Control-Allow-Origin: {$CORS}");
 
 $src = $_GET["source"] ?? '';
-if ($src === '' || filter_var($src, FILTER_VALIDATE_URL) === false || !vaild($src)) {
+if ($src === '' || filter_var($src, FILTER_VALIDATE_URL) === false || !valid($src)) {
     err_image(400, $EPATH);
     exit;
 }
