@@ -1,21 +1,35 @@
 <?php
+declare(strict_types=1);
+
 require_once "util.php";
 require_once "config.php";
 header("Access-Control-Allow-Origin: {$CORS}");
-if(isset($_GET["source"]) && !empty($_GET["source"]) && vaild($_GET["source"])){
-    if($UA === null) $UA = "ImageProxy_v1.0.0";
-    $image = CurlGet($_GET["source"], $UA);
-    if($image[1]["http_code"] === 200){
-        $mime = get_mime_type($image[0]);
-        header("Content-Type: {$mime}");
-        echo $image[0];
-    }else{
-        if(array_search($image[1]["http_code"], $ERROR_RESPONSE) !== false){
-            err_image($image[1]["http_code"], $EPATH);
-        }else{
-            err_image(500, $EPATH);
-        }
-    }
-}else{
+
+$src = $_GET["source"] ?? '';
+if ($src === '' || filter_var($src, FILTER_VALIDATE_URL) === false || !vaild($src)) {
     err_image(400, $EPATH);
+    exit;
+}
+
+$UA = $UA ?? "ImageProxy_v1.0.0";
+[$body, $info] = CurlGet($src, $UA);
+
+if ($body === null || $info === null || !isset($info["http_code"])) {
+    err_image(500, $EPATH);
+    exit;
+}
+
+$code = (int)$info["http_code"];
+
+if ($code === 200) {
+    $mime = get_mime_type($body) ?? "application/octet-stream";
+    header("Content-Type: {$mime}");
+    echo $body;
+    exit;
+}
+
+if (in_array($code, $ERROR_RESPONSE, true)) {
+    err_image($code, $EPATH);
+} else {
+    err_image(500, $EPATH);
 }
